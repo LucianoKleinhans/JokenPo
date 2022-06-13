@@ -1,0 +1,237 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('20220503:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+//Integrating Socket.IO
+const { Server } = require("socket.io");
+const io = new Server(server);
+
+var playerUm = {
+  id: '',
+  jogadaP1: '',
+  pontos: 0
+};
+
+var playerDois = {
+  id: '',
+  jogadaP2: '',
+  pontos: 0
+};
+
+var maxjogadores = 0;
+var player = 1;
+var rodada = 1;
+io.on('connection', (socket) => {
+  console.log('Player ' + socket.id + ' conectou!');
+  console.log('Player ' + player + ' conectou!');
+  if (player == 1) {
+    playerUm.id = socket.id;
+    socket.emit('user', player);
+    player++;
+  } else if (player == 2) {
+    playerDois.id = socket.id;
+    socket.emit('user', player);
+  }
+
+  /*   limite de player */
+  if (player != undefined) {
+    var aprovado;
+    if (maxjogadores < 2) {
+      aprovado = true;
+      maxjogadores++;
+      socket.emit('verifica', aprovado);
+    } else {
+      console.log("Limite max atingido: " + maxjogadores);
+      aprovado = false;
+      socket.emit('verifica', aprovado);
+    }
+  }
+  socket.on("disconnect", (reason) => {
+    console.log('Player desconectou!: ' + socket.id);
+    maxjogadores = 1;
+    player = 1
+    desconectou(socket.id);
+  });
+  /* jokenpo */
+  socket.on('jogada-player-1', function (jogadaP1) {
+    if (playerUm.jogadaP1 == '' || playerUm.jogadaP1 == './img/Vazio.png') {
+      playerUm.jogadaP1 = jogadaP1;
+    }
+    console.log(playerUm.jogadaP1.toString());
+    socket.broadcast.emit('selecionadoP1', jogadaP1);
+    socket.emit('selecionadoP1', jogadaP1);
+    console.log('jogadaP1: ' + jogadaP1);
+    console.log(playerUm);
+    verificarResultado();
+  });
+
+  socket.on('jogada-player-2', function (jogadaP2) {
+    if (playerDois.jogadaP2 == '' || playerDois.jogadaP2 == './img/Vazio.png') {
+      playerDois.jogadaP2 = jogadaP2;
+    }
+    console.log(playerDois.jogadaP2.toString());
+    socket.broadcast.emit('selecionadoP2', jogadaP2);
+    socket.emit('selecionadoP2', jogadaP2);
+    console.log('jogadaP2: ' + jogadaP2);
+    console.log(playerDois);
+    verificarResultado();
+  });
+
+  function verificarResultado() {
+    if (playerUm.jogadaP1 && playerDois.jogadaP2) {
+      var vencedor = '';
+      if (playerUm.jogadaP1 == playerDois.jogadaP2) {
+        vencedor = 'EMPATE !!!';
+      } else if (playerUm.jogadaP1 == 'Pedra') {
+        if (playerDois.jogadaP2 == 'Tesoura') {
+          playerUm.pontos++;
+          vencedor = 'Player 1 VENCEU !!!';
+        } else {
+          playerDois.pontos++;
+          vencedor = 'Player 2 VENCEU !!!';
+        }
+      }
+      else if (playerUm.jogadaP1 == 'Papel') {
+        if (playerDois.jogadaP2 == 'Pedra') {
+          playerUm.pontos++;
+          vencedor = 'Player 1 VENCEU !!!';
+        } else {
+          playerDois.pontos++;
+          vencedor = 'Player 2 VENCEU !!!';
+        }
+      }
+      else if (playerUm.jogadaP1 == 'Tesoura') {
+        if (playerDois.jogadaP2 == 'Pedra') {
+          playerDois.pontos++;
+          vencedor = 'Player 2 VENCEU !!!';
+        } else {
+          playerUm.pontos++;
+          vencedor = 'Player 1 VENCEU !!!';
+        }
+      }
+      rodada++;
+      io.emit('resultado', [vencedor, playerUm.pontos, playerDois.pontos, rodada]);
+      vencedor = '';
+      playerUm.jogadaP1 = '';
+      playerDois.jogadaP2 = '';
+    }
+  }
+
+  function desconectou(desconectado) {
+    if (desconectado == playerUm.id) {
+      playerUm.id == playerDois.id;
+      playerDois.id = '';
+    } else if (desconectado == playerDois.id) {
+      playerDois.id = '';
+    }
+    player = 2;
+    vencedor = '';
+    playerUm.pontos = 0;
+    playerUm.jogadaP1 = '';
+    playerDois.pontos = 0;
+    playerDois.jogadaP2 = '';
+    resetar = 2;
+    socket.emit('resetar', resetar);
+    socket.broadcast.emit('resetar', resetar);
+    rodada = 1;
+  }
+
+  // reset
+  socket.on('reset', function (reset) {
+    resetar = reset;
+    vencedor = '';
+    playerUm.jogadaP1 = '';
+    playerDois.jogadaP2 = '';
+    socket.emit('resetar', resetar);
+    socket.broadcast.emit('resetar', resetar);
+  });
+
+});
+
+
+/**
+* Listen on provided port, on all network interfaces.
+*/
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

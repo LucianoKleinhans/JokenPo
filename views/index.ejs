@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JokenPo</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+</head>
+
+<body class="body">
+    <div class="container">
+        <div class="placar">
+            <div class="row rowplacar">
+                <div class="col s4 center">
+                    <h2 class="flow-text">Player 1 -</h2>
+                </div>
+                <div class="col s2 center">
+                    <h2 class="pontosp1 flow-text">0</h2>
+                </div>
+                <div class="col s2 center">
+                    <h2 class="pontosp2 flow-text">0</h2>
+                </div>
+                <div class="col s4 center">
+                    <h2 class="flow-text">- Player 2</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container center">
+        <div class="row center">
+            <h3 class="col offset-s4 s4 rowrodadas rodadas">Rodada - 1</h3>
+            <h3 class="col offset-s5 s2 numJogador">Você é o jogador:</h3>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="center col s4" data-tilt data-tilt-glare data-tilt-max-glare="0">
+                <img id="pedra" class="img responsive-img" src="./img/Pedra.png" alt="">
+            </div>
+            <div class="center col s4" data-tilt data-tilt-glare data-tilt-max-glare="0">
+                <img id="papel" class="img responsive-img" src="./img/Papel.png" alt="">
+            </div>
+            <div class="center col s4" data-tilt data-tilt-glare data-tilt-max-glare="0">
+                <img id="tesoura" class="img responsive-img" src="./img/Tesoura.png" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="escolhidop1 col s6">
+                <div class="container">
+                    <div class="player">
+                        <div class="col s6">
+                            <h1 class="p1 flow-text">P1 -</h1>
+                        </div>
+                        <div class="col s6">
+                            <img class="IMGescolhidoP1 right responsive-img hidden" id="imgescolhido"
+                                src="./img/Vazio.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="escolhidop2 col s6">
+                <div class="container">
+                    <div class="player">
+                        <div class="col s6">
+                            <img class="IMGescolhidoP2 left responsive-img hidden" id="imgescolhido"
+                                src="./img/Vazio.png" alt="">
+                        </div>
+                        <div class="col s6">
+                            <h1 class="p2 right flow-text">- P2</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="resultado center">
+            <h1 class="vencedor flow-text">???</h1>
+        </div>
+    </div>
+    <div class="center">
+        <a id="reset" class="neon-button">RESET</a>
+    </div>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- <script type="text/javascript" src="./js/script.js"></script> -->
+    <script type="text/javascript" src="./js/vanilla-tilt.js"></script>
+    <script src="./js/socket.io.js"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        var socket = io();
+        var vencedor = "";
+        var jokenpo = "";
+        var jogadaP1 = "./img/Vazio.png";
+        var jogadaP2 = "./img/Vazio.png";
+        var id;
+        var e = 0;
+        socket.on('user', (player) => {
+            id = player;
+            console.log("player: " + id);
+            $('.numJogador').html('Você é o Player: ' + id);
+            if (id == 1 || id == 2) {
+                $(".body").removeClass('avoid-clicks');
+            }
+        });
+        socket.on('verifica', (aprovado) => {
+            if (aprovado == true) {
+                console.log('Pode jogar player: '+id);
+                $('.numJogador').html('Você é o Player: ' + id);
+            } else {
+                $('.numJogador').html('Espectador');
+                $(".body").addClass('avoid-clicks');
+            }
+        }); 
+        /* Clique na imagem */
+        $(".img").click(function play() {
+            jokenpo = $(this).attr('src');
+            console.log("img selecionada : ", jokenpo);
+            if (jokenpo == './img/Pedra.png') {
+                if (id == 1) {
+                    $("#pedra").addClass('selecionadoP1');
+                    jogadaP1 = "Pedra";
+                    socket.emit('jogada-player-1', jogadaP1);
+                } else {
+                    $("#pedra").addClass('selecionadoP2');
+                    jogadaP2 = "Pedra";
+                    socket.emit('jogada-player-2', jogadaP2);
+                }
+            } else if (jokenpo == './img/Papel.png') {
+                if (id == 1) {
+                    $("#papel").addClass('selecionadoP1');
+                    jogadaP1 = "Papel";
+                    socket.emit('jogada-player-1', jogadaP1);
+                } else {
+                    $("#papel").addClass('selecionadoP2');
+                    jogadaP2 = "Papel";
+                    socket.emit('jogada-player-2', jogadaP2);
+                }
+            } else if (jokenpo == './img/Tesoura.png') {
+                if (id == 1) {
+                    $("#tesoura").addClass('selecionadoP1');
+                    jogadaP1 = "Tesoura";
+                    socket.emit('jogada-player-1', jogadaP1);
+                } else {
+                    $("#tesoura").addClass('selecionadoP2');
+                    jogadaP2 = "Tesoura";
+                    socket.emit('jogada-player-2', jogadaP2);
+                }
+            }
+            $(".img").addClass('avoid-clicks');
+        });
+        socket.on('selecionadoP1', function selectedP1(selecionadoP1) {
+            $(".IMGescolhidoP1").attr('src', './img/' + selecionadoP1 + '.png');
+        });
+        socket.on('selecionadoP2', function selectedP2(selecionadoP2) {
+            $(".IMGescolhidoP2").attr('src', './img/' + selecionadoP2 + '.png');
+        });
+
+        /* Resultado */
+        socket.on('resultado', function vencedor(resultado) {
+            console.log('bom dia ->' + resultado);
+            $(".IMGescolhidoP1").removeClass('hidden');
+            $(".IMGescolhidoP2").removeClass('hidden');
+            $(".vencedor").html(resultado[0]);
+            $(".pontosp1").html(resultado[1]);
+            $(".pontosp2").html(resultado[2]);
+            $(".rodadas").html('Rodada - ' + resultado[3]);
+        });
+
+        /* botao resetar */
+        $('#reset').click(function reset() {
+            if ($(".vencedor").html() != '???') {
+                console.log('botao funcionando');
+                $(".IMGescolhidoP1").addClass('hidden');
+                $(".IMGescolhidoP2").addClass('hidden');
+                $(".img").removeClass('avoid-clicks');
+                $(".img").removeClass('selecionadoP1');
+                $(".img").removeClass('selecionadoP2');
+                $(".vencedor").html('???');
+                var reset = 1;
+                socket.emit('reset', reset);
+            }
+        });
+        socket.on('resetar', (resetar) => {
+            if (resetar == 2) {
+                id = 1;
+                $(".rodadas").html('Rodada - 1');
+                $('.numJogador').html('Você é o Player: ' + id);
+                $(".pontosp1").html('0');
+                $(".pontosp2").html('0');
+            }
+            $('.numJogador').html('Você é o Player: ' + id);
+            $(".IMGescolhidoP1").addClass('hidden');
+            $(".IMGescolhidoP2").addClass('hidden');
+            $(".img").removeClass('avoid-clicks');
+            $(".img").removeClass('selecionadoP1');
+            $(".img").removeClass('selecionadoP2');
+            $(".vencedor").html('???');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,225 @@
+body {
+  background-color: rgb(221, 221, 221);
+}
+
+.placar {
+  border-top-left-radius: 0em;
+  border-top-right-radius: 0em;
+  border-bottom-right-radius: 1em;
+  border-bottom-left-radius: 1em;
+  background-color: gray;
+  color: rgb(221, 221, 221);
+  font-size: 5em;
+  font-family: Impact;
+  padding-left: 0.4em;
+}
+
+.rowplacar {
+  padding-right: 0.4em;
+  margin-top: -0.3em;
+}
+
+.rowrodadas {
+  border-top-left-radius: 0em;
+  border-top-right-radius: 0em;
+  border-bottom-right-radius: 2em;
+  border-bottom-left-radius: 2em;
+  background-color: gray;
+  color: rgb(221, 221, 221);
+  padding:0.3em!important;
+  margin-top: -1.2em;
+}
+.numJogador{
+  border-top-left-radius: 0em;
+  border-top-right-radius: 0em;
+  border-bottom-right-radius: 2em;
+  border-bottom-left-radius: 2em;
+  background-color: gray;
+  color: rgb(221, 221, 221);
+  padding:0.3em!important;
+  margin-top: -1em;
+}
+
+h3 {
+  text-align: center !important;
+  font-family: Impact;
+  font-size: 1.2em !important;
+}
+
+.p1 {
+  font-size: 0.5em !important;
+}
+
+.p2 {
+  font-size: 0.5em !important;
+}
+
+/* IMG */
+
+.img {
+  width: 10em;
+  border-radius: 10em;
+}
+
+.selecionadoP1 {
+  animation: selecionadoP1 15s linear infinite;
+}
+
+.selecionadoP2 {
+  animation: selecionadoP2 15s linear infinite;
+}
+
+.avoid-clicks {
+  pointer-events: none;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Escolhido */
+
+.escolhidop1 {
+  border-radius: 1em;
+  background-color: gray;
+  color: rgb(221, 221, 221);
+  font-size: 5em;
+  font-family: Impact;
+  padding-left: 0.4em;
+
+}
+
+.escolhidop2 {
+  border-radius: 1em;
+  background-color: gray;
+  color: rgb(221, 221, 221);
+  font-size: 5em;
+  font-family: Impact;
+  padding-right: 0.4em;
+}
+
+#imgescolhido {
+  padding-top: 0.31em;
+  width: 1em;
+}
+
+.player {
+  margin-top: -0.2em;
+}
+
+/*Resultado */
+
+.resultado {
+  border-radius: 1em;
+  background-color: gray;
+  color: rgb(221, 221, 221);
+  font-size: 5em;
+  font-family: Impact;
+}
+
+/* button neon */
+#reset {
+  font-size: 1.5rem;
+  margin-top: 1em;
+  color: rgb(221, 221, 221);
+  background: gray;
+  font-family: "Balsamiq Sans", cursive;
+  border-radius: 0.25em;
+  padding: 0.25em 1em;
+  display: inline-block;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+
+
+@keyframes selecionadoP1 {
+  0% {
+    box-shadow: 0px 0px 2em #3fdad8;
+  }
+
+  20% {
+    box-shadow: 0px 0px 2em #1c7fee;
+  }
+
+  50% {
+    box-shadow: 0px 0px 2em #4c00ff;
+  }
+
+  70% {
+    box-shadow: 0px 0px 2em #1c7fee;
+  }
+
+  100% {
+    box-shadow: 0px 0px 2em #3fdad8;
+  }
+}
+
+@keyframes selecionadoP2 {
+  0% {
+    box-shadow: 0px 0px 2em #ff0000;
+  }
+
+  20% {
+    box-shadow: 0px 0px 2em #ff9a00;
+  }
+
+  50% {
+    box-shadow: 0px 0px 2em #d0de21;
+  }
+
+  70% {
+    box-shadow: 0px 0px 2em #ff9a00;
+  }
+
+  100% {
+    box-shadow: 0px 0px 2em #ff0000;
+  }
+}
+
+
+@keyframes rgb {
+  0% {
+    box-shadow: 0px 0px 2em #ff0000;
+  }
+
+  10% {
+    box-shadow: 0px 0px 2em #ff9a00;
+  }
+
+  20% {
+    box-shadow: 0px 0px 2em #d0de21;
+  }
+
+  30% {
+    box-shadow: 0px 0px 2em #4fdc4a;
+  }
+
+  40% {
+    box-shadow: 0px 0px 2em #3fdad8;
+  }
+
+  50% {
+    box-shadow: 0px 0px 2em #2fc9e2;
+  }
+
+  60% {
+    box-shadow: 0px 0px 2em #1c7fee;
+  }
+
+  70% {
+    box-shadow: 0px 0px 2em #5f15f2;
+  }
+
+  80% {
+    box-shadow: 0px 0px 2em #ba0cf8;
+  }
+
+  90% {
+    box-shadow: 0px 0px 2em #fb07d9;
+  }
+
+  100% {
+    box-shadow: 0px 0px 2em #ff0000;
+  }
+}
